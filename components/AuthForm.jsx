@@ -125,7 +125,7 @@ const AuthForm = ({ authMode, setAuthMode, isModalOpen, onClose, setUser }) => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full p-3 my-6 flex items-center justify-center gap-2.5 rounded-lg bg-[var(--primary)] font-semibold cursor-pointer transition transform active:scale-90"
+          className="w-full p-3 my-6 flex items-center justify-center gap-2.5 rounded-lg bg-[var(--primary)] text-white font-semibold cursor-pointer transition transform active:scale-90"
         >
           {authMode === "login" ? "Login" : "Create"}
           {loading && <Loader className={'w-5 h-5'}/>}

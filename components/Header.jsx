@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { FaMoon } from "react-icons/fa6";
 import { IoIosSunny } from "react-icons/io";
 import { useTheme } from "next-themes";
-import { MdMenuOpen } from "react-icons/md";
 import { HiOutlineBars3 } from "react-icons/hi2";
 import { useChatbotContext } from "@/context/ChatbotContext";
 import AuthForm from "./AuthForm";

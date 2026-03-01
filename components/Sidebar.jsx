@@ -298,7 +298,7 @@ const Sidebar = () => {
               </button>
 
               <button
-                className="px-3 py-2 mt-6 flex items-center justify-center text-[var(--bg-main)] rounded-lg bg-[var(--primary)] font-medium text-sm cursor-pointer transition transform active:scale-90"
+                className="px-3 py-2 mt-6 flex items-center justify-center text-white rounded-lg bg-[var(--primary)] font-medium text-sm cursor-pointer transition transform active:scale-90"
                 onClick={(e) => {
                   e.stopPropagation();
                   renameChatName(renameChatId);
