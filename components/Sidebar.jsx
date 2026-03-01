@@ -209,7 +209,7 @@ const Sidebar = () => {
                             >
                               {/* Rename */}
                               <button
-                                className="w-full text-left px-3 py-2 text-sm hover:bg-white/10 transition-colors flex items-center gap-2"
+                                className="w-full cursor-pointer text-left px-3 py-2 text-sm hover:bg-white/10 transition-colors flex items-center gap-2"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   setRenameChatId(chat?._id);
@@ -222,7 +222,7 @@ const Sidebar = () => {
 
                               {/* Delete */}
                               <button
-                                className="w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-white/10 transition-colors flex items-center gap-2"
+                                className="w-full cursor-pointer text-left px-3 py-2 text-sm text-red-400 hover:bg-white/10 transition-colors flex items-center gap-2"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   removeChatHistory(chat?._id);

@@ -135,11 +135,7 @@ const ChatPage = () => {
             <div className="w-full h-full flex items-center justify-center">
               <Loader className={"w-10 h-10"} />
             </div>
-          ) : !messages || messages?.length === 0 ? (
-            <p className="flex items-center justify-center h-full">
-              No chats | Invalid Id
-            </p>
-          ) : (
+          )  : (
             <ChatUI messages={messages} isLoading={isLoading} />
           )}
           <div ref={bottomRef} />
