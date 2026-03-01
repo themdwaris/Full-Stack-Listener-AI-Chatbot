@@ -20,12 +20,17 @@ const InputBoxContainer = ({onSend}) => {
       return;
     }
 
+    
+    const tempId = Date.now().toString();
+    setIsChatStarted(true);
+    router.push(`/${tempId}`); // instantly redirect
+
     setIsLoading(true);
     try {
       const { data } = await axios.post("/api/chat/create", { prompt });
       if (data?.success) {
         setIsChatStarted(true);
-        router.push(`/${data?.chatId}`);
+        router?.replace(`/${data?.chatId}`);
         await loadChatHistory()
         setIsLoading(false)
       }
