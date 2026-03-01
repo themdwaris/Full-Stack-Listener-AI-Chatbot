@@ -5,7 +5,7 @@ import ReactMarkdown from "react-markdown";
 const ChatUI = ({ messages,isLoading }) => {
   
   return (
-    <div className="pb-44 md:pb-0">
+    <div className={`pb-44 md:pb-3`}>
       <div className="max-w-3xl mx-auto flex flex-col gap-4">
         {messages.map((msg, i) => (
           <div

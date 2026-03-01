@@ -9,8 +9,7 @@ import Loader from "@/components/Loader";
 
 const ChatPage = () => {
   const { chatId } = useParams();
-  const { setIsChatStarted, setIsLoading, isLoading } =
-    useChatbotContext();
+  const { setIsChatStarted, setIsLoading, isLoading } = useChatbotContext();
   const [messages, setMessages] = useState([]);
   const bottomRef = useRef(null);
   const [chatThreadLoading, setChatThreadLoading] = useState(false);
@@ -98,7 +97,7 @@ const ChatPage = () => {
 
             try {
               const { token } = JSON.parse(jsonStr);
-              // Last AI message mein token append 
+              // Last AI message mein token append
               setMessages((prev) => {
                 const updated = [...prev];
                 const lastMsg = updated[updated.length - 1];
@@ -124,8 +123,10 @@ const ChatPage = () => {
   };
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isLoading]);
+    if ( !chatThreadLoading) {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages, chatThreadLoading]);
 
   return (
     <div className="h-[calc(100vh-56px)] flex flex-col w-full mt-2">
@@ -135,14 +136,14 @@ const ChatPage = () => {
             <div className="w-full h-full flex items-center justify-center">
               <Loader className={"w-10 h-10"} />
             </div>
-          )  : (
+          ) : (
             <ChatUI messages={messages} isLoading={isLoading} />
           )}
           <div ref={bottomRef} />
         </div>
 
-        <div className="fixed left-0 right-0 px-4 md:px-0 md:sticky bottom-0 bg-[var(--bg-main)] py-3">
-          <div className="max-w-3xl mx-auto">
+        <div className="fixed left-0 right-0 px-4 md:px-0 md:sticky bottom-0 bg-[var(--bg-main)]">
+          <div className=" md:pb-3 max-w-3xl mx-auto">
             <InputBoxContainer onSend={handleSend} />
           </div>
         </div>

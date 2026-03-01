@@ -34,7 +34,7 @@ const Home = () => {
         </div>
 
         {/* Input Box */}
-        <div className="fixed left-0 right-0 px-4 md:px-0 md:sticky bottom-0 bg-[var(--bg-main)] py-3 md:mt-14">
+        <div className="fixed left-0 right-0 px-4 md:px-0 md:sticky bottom-0 bg-[var(--bg-main)] md:mt-14">
           <div className="max-w-3xl mx-auto">
             <InputBoxContainer />
           </div>

@@ -135,6 +135,7 @@ const Sidebar = () => {
               onClick={() => {
                 setIsChatStarted(false);
                 setIsSidebarOpen(false);
+                if(pathname==='/') return;
                 router.push("/");
               }}
             >
