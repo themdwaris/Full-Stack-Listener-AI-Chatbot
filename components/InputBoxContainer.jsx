@@ -25,8 +25,8 @@ const InputBoxContainer = ({onSend}) => {
       const { data } = await axios.post("/api/chat/create", { prompt });
       if (data?.success) {
         setIsChatStarted(true);
-        await loadChatHistory()
         router.push(`/${data?.chatId}`);
+        await loadChatHistory()
         setIsLoading(false)
       }
     } catch (error) {
