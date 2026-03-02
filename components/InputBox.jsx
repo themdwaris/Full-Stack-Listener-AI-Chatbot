@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   MdOutlineKeyboardArrowDown,
   MdAdd,
@@ -10,6 +10,7 @@ import { IoSend } from "react-icons/io5";
 
 const InputBox = ({ onSend }) => {
   const [prompt, setPrompt] = useState("");
+  const textareaRef = useRef(null);
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -17,6 +18,11 @@ const InputBox = ({ onSend }) => {
     if (!prompt.trim()) return;
 
     onSend(prompt);
+
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+    }
+
     setPrompt(""); // clear input after send
   };
   // To adjust height of input box
@@ -33,6 +39,7 @@ const InputBox = ({ onSend }) => {
       className="w-full py-4 px-8 rounded-4xl bg-[var(--bg-second-muted)] mb-5"
     >
       <textarea
+      ref={textareaRef}
         rows={1}
         value={prompt}
         onChange={(e) => setPrompt(e.target.value)}

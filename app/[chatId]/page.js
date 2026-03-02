@@ -34,33 +34,7 @@ const ChatPage = () => {
     loadChatHistory();
   }, [chatId]);
 
-  // const handleSend = async (prompt) => {
-  //   if (!prompt.trim()) return;
-
-  //   // Show user prompt instantly
-  //   setMessages((prev) => [...prev, { role: "user", text: prompt }]);
-
-  //   // For ai thinking indicator
-  //   setIsLoading(true);
-
-  //   try {
-  //     const { data } = await axios.post(`/api/chat/${chatId}`, { prompt });
-
-  //     if (data.success) {
-  //       setMessages((prev) => [
-  //         ...prev,
-  //         { role: "ai", text: data?.aiResponse },
-  //       ]);
-  //       setIsLoading(false);
-  //     }
-  //   } catch (error) {
-  //     console.error("Ai Response error:", error);
-  //     setIsLoading(false);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
+  
   const handleSend = async (prompt) => {
     if (!prompt.trim()) return;
 
@@ -123,10 +97,11 @@ const ChatPage = () => {
   };
 
   useEffect(() => {
-    if ( !chatThreadLoading) {
-      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages, chatThreadLoading]);
+    // if ( !isLoading||!chatThreadLoading) {
+    //   bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    // }
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, isLoading,chatThreadLoading]);
 
   return (
     <div className="h-[calc(100vh-56px)] flex flex-col w-full mt-2">

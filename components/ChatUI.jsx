@@ -5,7 +5,7 @@ import ReactMarkdown from "react-markdown";
 const ChatUI = ({ messages,isLoading }) => {
   
   return (
-    <div className={`pb-44 md:pb-3`}>
+    <div className={`pb-44 md:pb-3 ${isLoading?"mt-15":"mt-2"} md:mt-2`}>
       <div className="max-w-3xl mx-auto flex flex-col gap-4">
         {messages.map((msg, i) => (
           <div
@@ -15,10 +15,10 @@ const ChatUI = ({ messages,isLoading }) => {
             }`}
           >
             <div
-              className={`px-1 py-3 rounded-2xl max-w-full flex flex-col  text-sm leading-relaxed font-medium text-[var(--text-main)] ${
+              className={`px-1 py-3 rounded-2xl flex flex-col  text-sm leading-relaxed font-medium text-[var(--text-main)] ${
                 msg.role === "user"
-                  ? "px-4 bg-[var(--bg-second-muted)]"
-                  : "rounded-bl-none"
+                  ? "px-4 max-w-[80%] bg-[var(--bg-second-muted)]"
+                  : "max-w-full rounded-bl-none"
               }`}
             >
               {msg.role === "ai" ? (

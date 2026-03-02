@@ -299,6 +299,7 @@ const Sidebar = () => {
               </button>
 
               <button
+              disabled={renameLoading}
                 className="px-3 py-2 mt-6 flex items-center justify-center text-white rounded-lg bg-[var(--primary)] font-medium text-sm cursor-pointer transition transform active:scale-90"
                 onClick={(e) => {
                   e.stopPropagation();
