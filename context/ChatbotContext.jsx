@@ -15,6 +15,7 @@ export const ChatbotContextProvider = ({ children }) => {
   const [chatHistory, setChatHistory] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [chatListLoading,setChatListLoading]=useState(false)
+  const [genImage,setGenImage]=useState('')
   const router = useRouter();
 
   
@@ -80,7 +81,8 @@ export const ChatbotContextProvider = ({ children }) => {
         setAuthMode,
         loadChatHistory,
         chatHistory,
-        chatListLoading
+        chatListLoading,
+        genImage,setGenImage
       }}
     >
       {children}

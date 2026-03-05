@@ -3,15 +3,21 @@ import InputBox from "@/components/InputBox";
 import { useChatbotContext } from "@/context/ChatbotContext";
 import axios from "axios";
 
-const InputBoxContainer = ({onSend}) => {
-  const { loadChatHistory,setIsChatStarted, router, user, setIsModalOpen, setIsLoading } =
-    useChatbotContext();
+const InputBoxContainer = ({ onSend }) => {
+  const {
+    loadChatHistory,
+    setIsChatStarted,
+    router,
+    user,
+    setIsModalOpen,
+    setIsLoading,
+  } = useChatbotContext();
 
-  const handleSend = async (prompt) => {
+  const handleSend = async (prompt, isImage = false) => {
     if (!prompt.trim()) return;
 
     if (onSend) {
-      onSend(prompt);
+      onSend(prompt, isImage);
       return;
     }
 
@@ -20,19 +26,26 @@ const InputBoxContainer = ({onSend}) => {
       return;
     }
 
-    
     const tempId = Date.now().toString();
     setIsChatStarted(true);
-    router.push(`/${tempId}`); // instantly redirect
+    router.push(`/${tempId}`);
 
-    setIsLoading(true);
     try {
-      const { data } = await axios.post("/api/chat/create", { prompt });
-      if (data?.success) {
-        setIsChatStarted(true);
-        router?.replace(`/${data?.chatId}`);
-        await loadChatHistory()
-        setIsLoading(false)
+      if (isImage) {
+        const { data } = await axios.post("/api/chat/create", { prompt,isImage:true });
+        if (data?.success) {
+          router?.replace(`/${data?.chatId}`);
+          await loadChatHistory();
+          
+        }
+      } else {
+        setIsLoading(true);
+        const { data } = await axios.post("/api/chat/create", { prompt });
+        if (data?.success) {
+          router.replace(`/${data?.chatId}`);
+          await loadChatHistory();
+          setIsLoading(false);
+        }
       }
     } catch (error) {
       console.log("Failed to create new chat:", error);

@@ -153,4 +153,52 @@ export async function GET(req, { params }) {
   }
 }
 
+// Save generated image
 
+export async function PATCH(req, { params }) {
+  try {
+    const token = req.cookies.get("token")?.value;
+    if (!token)
+      return NextResponse.json(
+        { success: false, message: "Unauthorized" },
+        { status: 401 },
+      );
+
+    const decodeUser = jwt.verify(token, process.env.JWT_SECRET);
+    const { chatId } = await params;
+    const { prompt, imageUrl } = await req.json();
+
+    await dbConnect();
+
+    const chat = await ChatModel.findOne({
+      _id: chatId,
+      userId: decodeUser?.userId,
+    });
+    if (!chat)
+      return NextResponse.json(
+        { success: false, message: "Chat not found" },
+        { status: 404 },
+      );
+
+    if (prompt && prompt.trim()) {
+      chat.messages.push({ role: "user", text: prompt });
+    }
+
+    // ✅ Image ke sath prompt bhi save karo
+    chat.messages.push({
+      role: "ai",
+      text: "",
+      image: imageUrl,
+      // imagePrompt: imagePrompt, // ✅
+    });
+    await chat.save();
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("PATCH error:", error.message); // ✅ add karo
+    return NextResponse.json(
+      { success: false, message: error.message },
+      { status: 500 },
+    );
+  }
+}

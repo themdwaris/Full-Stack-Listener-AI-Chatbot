@@ -13,37 +13,136 @@ const ChatPage = () => {
   const [messages, setMessages] = useState([]);
   const bottomRef = useRef(null);
   const [chatThreadLoading, setChatThreadLoading] = useState(false);
+  const [isImageLoading, setIsImageLoading] = useState(false);
+  const imageGeneratedRef = useRef(false);
+
+  // useEffect(() => {
+  //   setIsChatStarted(true);
+  //   imageGeneratedRef.current = false;
+
+  //   const loadChatThreadHistory = async () => {
+  //     setChatThreadLoading(true);
+  //     try {
+  //       const { data } = await axios.get(`/api/chat/${chatId}`);
+  //       if (data?.success) {
+  //         setMessages(data?.messages);
+  //         setChatThreadLoading(false);
+
+  //         const msgs = data?.messages;
+
+  //         // Ref check karo — sirf ek baar generate ho
+  //         if (
+  //           msgs?.length === 1 &&
+  //           msgs[0]?.role === "user" &&
+  //           !imageGeneratedRef.current // ✅ NEW CHECK
+  //         ) {
+  //           imageGeneratedRef.current = true; // ✅ Mark as generated
+  //           handleSend(msgs[0]?.text, true, true);
+  //           await loadChatThreadHistory();
+  //         }
+  //       }
+  //     } catch (error) {
+  //       setChatThreadLoading(false);
+  //     }
+  //   };
+  //   loadChatThreadHistory();
+  // }, [chatId]);
 
   useEffect(() => {
     setIsChatStarted(true);
+    imageGeneratedRef.current = false;
 
-    const loadChatHistory = async () => {
+    const loadChatThreadHistory = async () => {
       setChatThreadLoading(true);
       try {
         const { data } = await axios.get(`/api/chat/${chatId}`);
         if (data?.success) {
           setMessages(data?.messages);
           setChatThreadLoading(false);
+          const msgs = data?.messages;
+
+          if (
+            msgs?.length === 1 &&
+            msgs[0]?.role === "user" &&
+            !imageGeneratedRef.current
+          ) {
+            imageGeneratedRef.current = true;
+            generateImage(msgs[0]?.text);
+          }
         }
       } catch (error) {
         setChatThreadLoading(false);
-        console.log("Failed to load chat thread history:", error);
       }
     };
-
-    loadChatHistory();
+    loadChatThreadHistory();
   }, [chatId]);
 
-  
-  const handleSend = async (prompt) => {
+  const generateImage = async (prompt) => {
+    setMessages((prev) => [
+    ...prev,
+    { role: "user", text: prompt },  // ✅ user message add karo
+    { role: "ai", text: "", image: null },
+  ]);
+    try {
+      setIsImageLoading(true);
+      const { data } = await axios.post("/api/chat/generate-img", { prompt });
+      if (data?.success) {
+        setMessages((prev) => {
+          const updated = [...prev];
+          updated[updated.length - 1] = {
+            role: "ai",
+            text: "",
+            image: data.imageUrl,
+          };
+          
+          return updated;
+        });
+        await axios.patch(`/api/chat/${chatId}`, { imageUrl: data.imageUrl });
+      }
+    } catch (error) {
+      console.error("Image error:", error);
+    } finally {
+      setIsImageLoading(false);
+    }
+  };
+
+  const handleSend = async (prompt, isImage = false) => {
     if (!prompt.trim()) return;
 
-    setMessages((prev) => [...prev, { role: "user", text: prompt }]);
-    setIsLoading(true);
+    setMessages((prev) => [
+      ...prev,
+      { role: "user", text: prompt },
+      { role: "ai", text: "", image: null },
+    ]);
 
-    setMessages((prev) => [...prev, { role: "ai", text: "" }]);
-    setIsLoading(false);
+    if (isImage) {
+      try {
+        setIsImageLoading(true);
+        const { data } = await axios.post("/api/chat/generate-img", { prompt });
+        if (data?.success) {
+          setMessages((prev) => {
+            const updated = [...prev];
+            updated[updated.length - 1] = {
+              role: "ai",
+              text: "",
+              image: data.imageUrl,
+            };
+            return updated;
+          });
+          await axios.patch(`/api/chat/${chatId}`, {
+            prompt,
+            imageUrl: data.imageUrl,
+          });
+        }
+      } catch (error) {
+        console.error("Image error:", error);
+      } finally {
+        setIsImageLoading(false);
+      }
+      return;
+    }
 
+    // Text stream flow
     try {
       setIsLoading(true);
       const response = await fetch(`/api/chat/${chatId}`, {
@@ -65,33 +164,34 @@ const ChatPage = () => {
         const lines = chunk.split("\n").filter(Boolean);
 
         for (const line of lines) {
-          if (line.startsWith("data: ")) {
-            const jsonStr = line.replace("data: ", "").trim();
-            if (jsonStr === "[DONE]") break;
+          if (!line.startsWith("data: ")) continue;
+          const jsonStr = line.replace("data: ", "").trim();
+          if (jsonStr === "[DONE]") break;
 
-            try {
-              const { token } = JSON.parse(jsonStr);
-              // Last AI message mein token append
-              setMessages((prev) => {
-                const updated = [...prev];
-                const lastMsg = updated[updated.length - 1];
-                if (lastMsg.role === "ai") {
-                  updated[updated.length - 1] = {
-                    ...lastMsg,
-                    text: lastMsg.text + token,
-                  };
-                }
-                return updated;
-              });
-              setIsLoading(false);
-            } catch {
-              setIsLoading(false);
-            }
+          try {
+            const { token } = JSON.parse(jsonStr);
+            setMessages((prev) => {
+              const updated = [...prev];
+              const lastMsg = updated[updated.length - 1];
+              if (lastMsg?.role === "ai") {
+                updated[updated.length - 1] = {
+                  ...lastMsg,
+                  text: lastMsg.text + token,
+                };
+              }
+
+              return updated;
+            });
+            setIsLoading(false);
+          } catch {
+            setIsLoading(false);
           }
         }
       }
     } catch (error) {
       console.error("Stream error:", error);
+      setIsLoading(false);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -101,7 +201,7 @@ const ChatPage = () => {
     //   bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     // }
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isLoading,chatThreadLoading]);
+  }, [messages, isLoading, chatThreadLoading]);
 
   return (
     <div className="h-[calc(100vh-56px)] flex flex-col w-full mt-2">
@@ -112,7 +212,11 @@ const ChatPage = () => {
               <Loader className={"w-10 h-10"} />
             </div>
           ) : (
-            <ChatUI messages={messages} isLoading={isLoading} />
+            <ChatUI
+              messages={messages}
+              isLoading={isLoading}
+              isImageLoading={isImageLoading}
+            />
           )}
           <div ref={bottomRef} />
         </div>

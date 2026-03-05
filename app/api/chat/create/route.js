@@ -1,3 +1,6 @@
+
+
+
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import dbConnect from "@/config/db";
@@ -6,22 +9,33 @@ import ChatModel from "@/model/chatModel";
 
 export async function POST(req) {
   try {
-    // Verify token from cookies
     const token = req.cookies.get("token")?.value;
     if (!token)
       return NextResponse.json({ message: "Unauthorized", success: false });
 
-    // Decode user info from token
-    const decodeUser = await jwt.verify(token, process.env.JWT_SECRET);
-
+    const decodeUser = jwt.verify(token, process.env.JWT_SECRET);
     await dbConnect();
 
-    const { prompt } = await req.json();
+    const { prompt, isImage } = await req.json();
 
-    // Calling main Fun to get Ai response
+    // ✅ Image chat — sirf user message save karo, AI response nahi
+    if (isImage) {
+      const chat = await ChatModel.create({
+        userId: decodeUser?.userId,
+        title: prompt?.slice(0, 25),
+        messages: [{ role: "user", text: prompt }],
+      });
+
+      return NextResponse.json({
+        success: true,
+        chatId: chat?._id,
+        title: chat?.title,
+        messages: chat?.messages,
+      });
+    }
+
+    // ✅ Normal text chat — AI response bhi save karo
     const aiResponse = await main(prompt);
-
-    //Creating new chat
 
     const chat = await ChatModel.create({
       userId: decodeUser?.userId,
