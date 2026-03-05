@@ -184,18 +184,18 @@ export async function PATCH(req, { params }) {
       chat.messages.push({ role: "user", text: prompt });
     }
 
-    // ✅ Image ke sath prompt bhi save karo
+    // Image ke sath prompt bhi save karo
     chat.messages.push({
       role: "ai",
       text: "",
       image: imageUrl,
-      // imagePrompt: imagePrompt, // ✅
+      
     });
     await chat.save();
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("PATCH error:", error.message); // ✅ add karo
+    console.error("PATCH error:", error.message); 
     return NextResponse.json(
       { success: false, message: error.message },
       { status: 500 },

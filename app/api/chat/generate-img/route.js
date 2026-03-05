@@ -40,7 +40,7 @@
 
 //     return NextResponse.json({
 //       success: true,
-//       imageUrl: uploaded.secure_url 
+//       imageUrl: uploaded.secure_url
 //     });
 
 //   } catch (error) {
@@ -52,17 +52,19 @@
 //   }
 // }
 
-
-// Using Clipdrop api 
-import cloudinary from '@/config/cloudinary';
-import { NextResponse } from 'next/server';
+// Using Clipdrop api
+import cloudinary from "@/config/cloudinary";
+import { NextResponse } from "next/server";
 
 export async function POST(request) {
   try {
     const { prompt } = await request.json();
 
     if (!prompt) {
-      return NextResponse.json({ error: 'Prompt is required' }, { status: 400 });
+      return NextResponse.json(
+        { error: "Prompt is required" },
+        { status: 400 },
+      );
     }
 
     const formData = new FormData();
@@ -77,6 +79,32 @@ export async function POST(request) {
     });
 
     if (!response.ok) {
+      const status = response.status;
+
+      // Credit khatam
+      if (status === 402 || status === 429) {
+        return NextResponse.json(
+          {
+            success: false,
+            creditExhausted: true,
+            error:
+              "Daily image generation limit reached. Please try again tomorrow.",
+          },
+          { status: 429 },
+        );
+      }
+
+      if (status === 500) {
+        return NextResponse.json(
+          {
+            success: false,
+            serverError: true,
+            error: "Clipdrop server error. Please try again in a moment.",
+          },
+          { status: 500 },
+        );
+      }
+
       const err = await response.text();
       throw new Error(err);
     }
@@ -85,13 +113,15 @@ export async function POST(request) {
     const base64Image = `data:image/png;base64,${Buffer.from(imageBuffer).toString("base64")}`;
 
     const uploaded = await cloudinary.uploader.upload(base64Image, {
-      folder: 'listner-ai/generated',
+      folder: "listner-ai/generated",
     });
 
     return NextResponse.json({ success: true, imageUrl: uploaded.secure_url });
-
   } catch (error) {
-    console.error('Image generation error:', error);
-    return NextResponse.json({ error: 'Failed to generate image' }, { status: 500 });
+    console.error("Image generation error:", error);
+    return NextResponse.json(
+      { error: "Failed to generate image" },
+      { status: 500 },
+    );
   }
 }

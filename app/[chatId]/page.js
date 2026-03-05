@@ -78,14 +78,37 @@ const ChatPage = () => {
   }, [chatId]);
 
   const generateImage = async (prompt) => {
-    setMessages((prev) => [
-    ...prev,
-    { role: "user", text: prompt },  // ✅ user message add karo
-    { role: "ai", text: "", image: null },
-  ]);
+    setMessages((prev) => [...prev, { role: "ai", text: "", image: null }]);
     try {
       setIsImageLoading(true);
       const { data } = await axios.post("/api/chat/generate-img", { prompt });
+
+      if (data?.creditExhausted) {
+        setMessages((prev) => {
+          const updated = [...prev];
+          updated[updated.length - 1] = {
+            role: "ai",
+            text: "Daily image generation limit reached. Please try again tomorrow.",
+            image: null,
+          };
+          return updated;
+        });
+        return;
+      }
+
+      if (data?.serverError) {
+        setMessages((prev) => {
+          const updated = [...prev];
+          updated[updated.length - 1] = {
+            role: "ai",
+            text: "Image generation service is currently unavailable. Please try again in a moment.",
+            image: null,
+          };
+          return updated;
+        });
+        return;
+      }
+
       if (data?.success) {
         setMessages((prev) => {
           const updated = [...prev];
@@ -94,13 +117,21 @@ const ChatPage = () => {
             text: "",
             image: data.imageUrl,
           };
-          
+
           return updated;
         });
         await axios.patch(`/api/chat/${chatId}`, { imageUrl: data.imageUrl });
       }
     } catch (error) {
-      console.error("Image error:", error);
+      setMessages((prev) => {
+        const updated = [...prev];
+        updated[updated.length - 1] = {
+          role: "ai",
+          text: "Image generation failed. Please try again.",
+          image: null,
+        };
+        return updated;
+      });
     } finally {
       setIsImageLoading(false);
     }
