@@ -1,6 +1,7 @@
 # 🤖 Listener — AI Chatbot
 
-A modern, full-stack AI chatbot application built with **Next.js**, **Tailwind CSS**, **MongoDB**, and **OpenRouter API**. Listener provides a seamless conversational experience with real-time streaming responses, persistent chat history, and secure JWT-based authentication.
+A modern, full-stack AI chatbot application built with **Next.js**, **Tailwind CSS**, **MongoDB**,**Cloudinary**, and **OpenRouter API**. Listener provides a seamless conversational experience with real-time streaming responses, persistent chat history, and secure JWT-based authentication and Integrated **Image generation** feature using a third-party API with real-time loading states and seamless cloudinary 
+integration for image storage and delivery.
 
 ---
 
@@ -14,6 +15,7 @@ A modern, full-stack AI chatbot application built with **Next.js**, **Tailwind C
 
 ### 💬 Chat Management
 - **Create** new chats from the landing page
+- **Image generation** generate images while chatting
 - **Rename** any chat with a modal dialog
 - **Delete** chats with instant sidebar refresh
 - **Persistent chat history** — all conversations saved to MongoDB
