@@ -81,7 +81,7 @@ export async function POST(request) {
     if (!response.ok) {
       const status = response.status;
 
-      // Credit khatam
+      
       if (status === 402 || status === 429) {
         return NextResponse.json(
           {
