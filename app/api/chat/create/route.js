@@ -18,7 +18,7 @@ export async function POST(req) {
 
     const { prompt, isImage } = await req.json();
 
-    // ✅ Image chat — sirf user message save karo, AI response nahi
+    
     if (isImage) {
       const chat = await ChatModel.create({
         userId: decodeUser?.userId,
@@ -34,7 +34,7 @@ export async function POST(req) {
       });
     }
 
-    // ✅ Normal text chat — AI response bhi save karo
+    
     const aiResponse = await main(prompt);
 
     const chat = await ChatModel.create({
