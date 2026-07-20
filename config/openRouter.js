@@ -49,7 +49,7 @@ export async function main(prompt, onChunk) {
           "X-Title": "Chatbot Test App",
         },
         body: JSON.stringify({
-          model: "meta-llama/llama-3-8b-instruct",
+          model: "openai/gpt-oss-20b:free",
           messages: [
             {
               role: "system",
@@ -76,6 +76,18 @@ Tone: Friendly, professional, and confident.`,
         }),
       },
     );
+
+// console.log(response.headers.get("content-type"));
+// console.log(response.status);
+
+// const text = await response.text();
+// console.log(text);
+
+    if (!response.ok) {
+      const errText = await response.text();
+      console.log("OpenRouter API error:", response.status, errText);
+      throw new Error(`OpenRouter error ${response.status}: ${errText}`);
+    }
 
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
@@ -111,3 +123,5 @@ Tone: Friendly, professional, and confident.`,
     throw error;
   }
 }
+
+

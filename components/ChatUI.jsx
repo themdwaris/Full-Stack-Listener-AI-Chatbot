@@ -3,7 +3,7 @@ import ReactMarkdown from "react-markdown";
 import { MdOutlineFileDownload } from "react-icons/md";
 
 const ChatUI = ({ messages, isLoading, isImageLoading }) => {
-  console.log(messages);
+  
 
   const imageDownloadHandle = async(image)=>{
     try {
