@@ -75,7 +75,7 @@ export async function POST(req, { params }) {
         { status: 404 },
       );
 
-    // Stream response banao
+    // Stream response
     const encoder = new TextEncoder();
     let fullResponse = "";
 
@@ -83,13 +83,13 @@ export async function POST(req, { params }) {
       async start(controller) {
         await main(prompt, (token) => {
           fullResponse += token;
-          // Har token client ko bhejo
+          
           controller.enqueue(
             encoder.encode(`data: ${JSON.stringify({ token })}\n\n`),
           );
         });
 
-        // DB mein save karo jab complete ho
+        
         chat.messages.push({ role: "user", text: prompt });
         chat.messages.push({ role: "ai", text: fullResponse });
         await chat.save();
@@ -184,7 +184,7 @@ export async function PATCH(req, { params }) {
       chat.messages.push({ role: "user", text: prompt });
     }
 
-    // Image ke sath prompt bhi save karo
+  
     chat.messages.push({
       role: "ai",
       text: "",
